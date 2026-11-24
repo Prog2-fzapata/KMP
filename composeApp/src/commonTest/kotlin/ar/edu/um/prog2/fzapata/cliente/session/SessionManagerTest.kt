@@ -14,6 +14,19 @@ class SessionManagerTest {
         assertEquals("jwt", SessionManager(store).token())
     }
 
+    // Es lo que hace volver al login: quien observa el token se entera de que se vació
+    @Test
+    fun observersAreToldWhenTheSessionIsSavedAndExpired() {
+        val session = SessionManager(FakeSessionStore())
+        assertNull(session.tokenFlow.value)
+
+        session.save("jwt")
+        assertEquals("jwt", session.tokenFlow.value)
+
+        session.expire()
+        assertNull(session.tokenFlow.value)
+    }
+
     @Test
     fun expiringClearsBothTheManagerAndTheStore() {
         val store = FakeSessionStore("jwt")
