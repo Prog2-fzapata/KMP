@@ -6,8 +6,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import ar.edu.um.prog2.fzapata.cliente.config.LocalAppConfig
-import ar.edu.um.prog2.fzapata.cliente.screens.HomeScreen
+import ar.edu.um.prog2.fzapata.cliente.screens.ProfessionalListScreen
 import ar.edu.um.prog2.fzapata.cliente.screens.LoginScreen
 import cafe.adriel.voyager.navigator.Navigator
 
@@ -18,12 +17,12 @@ class App(private val container: AppContainer) {
         // El compose vigila el token, si cambia .Content() se vuelve a ejecutar
         val hasSession = container.session.tokenFlow.collectAsState().value != null
 
-        CompositionLocalProvider(LocalAppConfig provides container.config, LocalAppContainer provides container) {
+        CompositionLocalProvider(LocalAppContainer provides container) {
             MaterialTheme {
                 // Mientras hasSession valga lo mismo, reutiliza lo de adentro, si no, descarta y arma de cero
                 key(hasSession) {
                     // Con key, descarta la pila y no puede volver para atrás
-                    Navigator(screen = if (hasSession) HomeScreen() else LoginScreen())
+                    Navigator(screen = if (hasSession) ProfessionalListScreen() else LoginScreen())
                 }
             }
         }
