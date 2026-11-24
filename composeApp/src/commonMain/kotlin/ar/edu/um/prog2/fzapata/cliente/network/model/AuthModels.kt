@@ -16,7 +16,13 @@ data class RegisterRequest(
 
 // username es el login o el email
 @Serializable
-data class LoginRequest(val username: String, val password: String, val rememberMe: Boolean)
+data class LoginRequest(
+    val username: String,
+    val password: String,
+    val rememberMe: Boolean
+)
 
 @Serializable
-data class TokenResponse(@SerialName("id_token") val idToken: String)
+data class TokenResponse(
+    @SerialName("id_token") val idToken: String
+)
