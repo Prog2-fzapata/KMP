@@ -2,7 +2,7 @@
 
 App Android hecha con Kotlin Multiplatform y Compose Multiplatform. Permite registrarse, buscar profesionales, ver su disponibilidad y reservar turnos. Consume dos servicios: el de catálogo (`ServicioCatalogo`, puerto `8081`) y el de turnos (`ServicioTurnos`, puerto `8082`).
 
-Estado: proyecto base (KMP-01), cliente HTTP con sesión y manejo de errores (KMP-02), y registro e inicio de sesión (KMP-03). Las demás pantallas se agregan issue por issue.
+Estado: proyecto base (KMP-01), cliente HTTP con sesión y manejo de errores (KMP-02), registro e inicio de sesión (KMP-03), y la lista de profesionales con filtros (KMP-04). Las demás pantallas se agregan issue por issue.
 
 ## Documentos
 
