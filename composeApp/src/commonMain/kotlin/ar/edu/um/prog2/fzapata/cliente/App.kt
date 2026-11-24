@@ -3,17 +3,28 @@ package ar.edu.um.prog2.fzapata.cliente
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import ar.edu.um.prog2.fzapata.cliente.config.LocalAppConfig
 import ar.edu.um.prog2.fzapata.cliente.screens.HomeScreen
+import ar.edu.um.prog2.fzapata.cliente.screens.LoginScreen
 import cafe.adriel.voyager.navigator.Navigator
 
 class App(private val container: AppContainer) {
 
     @Composable
     fun Content() {
-        CompositionLocalProvider(LocalAppConfig provides container.config) {
+        // El compose vigila el token, si cambia .Content() se vuelve a ejecutar
+        val hasSession = container.session.tokenFlow.collectAsState().value != null
+
+        CompositionLocalProvider(LocalAppConfig provides container.config, LocalAppContainer provides container) {
             MaterialTheme {
-                Navigator(screen = HomeScreen())
+                // Mientras hasSession valga lo mismo, reutiliza lo de adentro, si no, descarta y arma de cero
+                key(hasSession) {
+                    // Con key, descarta la pila y no puede volver para atrás
+                    Navigator(screen = if (hasSession) HomeScreen() else LoginScreen())
+                }
             }
         }
     }
