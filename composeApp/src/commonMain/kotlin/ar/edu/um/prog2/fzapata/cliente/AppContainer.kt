@@ -3,6 +3,7 @@ package ar.edu.um.prog2.fzapata.cliente
 import androidx.compose.runtime.staticCompositionLocalOf
 import ar.edu.um.prog2.fzapata.cliente.config.AppConfig
 import ar.edu.um.prog2.fzapata.cliente.network.AuthApi
+import ar.edu.um.prog2.fzapata.cliente.network.CatalogApi
 import ar.edu.um.prog2.fzapata.cliente.network.ErrorMessages
 import ar.edu.um.prog2.fzapata.cliente.network.HttpClientFactory
 import ar.edu.um.prog2.fzapata.cliente.session.SessionManager
@@ -20,6 +21,7 @@ class AppContainer(val config: AppConfig, sessionStore: SessionStore) {
     // ErrorMessages para poder traducir
     val errorMessages = ErrorMessages()
     val authApi = AuthApi(httpClient, config)
+    val catalogApi = CatalogApi(httpClient, config)
 }
 
 // Las pantallas lo leen de aquí: así no lo llevan como campo (Voyager serializa las pantallas)
