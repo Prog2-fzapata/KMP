@@ -11,3 +11,4 @@ Estados posibles: `aceptada`, `reemplazada por NNN` y `obsoleta`.
 | 003 | [Pruebas acotadas y sin SonarCloud](003-pruebas-acotadas-y-sin-sonarcloud.md) | aceptada |
 | 004 | [Guardar el JWT cifrado con el Android Keystore](004-jwt-cifrado-con-el-keystore.md) | aceptada |
 | 005 | [Cliente HTTP: motor, errores y sesión vencida](005-cliente-http-errores-y-sesion-vencida.md) | aceptada |
+| 006 | [ViewModel por pantalla y pantalla de inicio según la sesión](006-viewmodel-y-pantalla-segun-la-sesion.md) | aceptada |
