@@ -2,7 +2,7 @@
 
 App Android hecha con Kotlin Multiplatform y Compose Multiplatform. Permite registrarse, buscar profesionales, ver su disponibilidad y reservar turnos. Consume dos servicios: el de catálogo (`ServicioCatalogo`, puerto `8081`) y el de turnos (`ServicioTurnos`, puerto `8082`).
 
-Estado: proyecto base (KMP-01). La app arranca y muestra a qué servicios apunta; las pantallas se agregan issue por issue.
+Estado: proyecto base (KMP-01) y cliente HTTP con sesión y manejo de errores (KMP-02). La app arranca y muestra a qué servicios apunta; las pantallas se agregan issue por issue.
 
 ## Documentos
 
@@ -46,8 +46,12 @@ export JAVA_HOME=/ruta/al/jdk-21
 ## Estructura
 
 ```
-composeApp/src/commonMain/    código compartido: pantallas, configuración
-composeApp/src/androidMain/   MainActivity, AndroidManifest y recursos de Android
+composeApp/src/commonMain/    código compartido
+    config/                   URLs de los servicios
+    network/                  cliente HTTP, errores y sus mensajes
+    session/                  el token de la sesión
+    screens/                  pantallas
+composeApp/src/androidMain/   MainActivity, ClienteApplication, almacenamiento cifrado del token y recursos de Android
 composeApp/src/debug/         manifiesto extra solo de debug (texto plano)
 composeApp/src/commonTest/    pruebas
 ```
