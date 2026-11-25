@@ -1,4 +1,6 @@
-package ar.edu.um.prog2.fzapata.cliente.viewmodel
+package ar.edu.um.prog2.fzapata.cliente.viewmodel.validation
+
+import ar.edu.um.prog2.fzapata.cliente.viewmodel.RegisterForm
 
 // Los límites de POST /api/register (docs/contrato.md del catálogo). El patrón del login lo valida el servidor.
 // Devuelve el mensaje de cada campo con error, con el mismo nombre de campo que usa el servicio.

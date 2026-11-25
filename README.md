@@ -50,7 +50,8 @@ composeApp/src/commonMain/    código compartido
     config/                   URLs de los servicios
     network/                  cliente HTTP, errores y sus mensajes
     session/                  el token de la sesión
-    viewmodel/                el estado de cada pantalla y las validaciones
+    viewmodel/                el estado de cada pantalla y las reglas que usa
+        validation/           validadores de formularios y errores de campo del servicio
     screens/                  pantallas
         components/           piezas de pantalla que se reutilizan (campo de texto, casilla, horarios de un día)
 composeApp/src/androidMain/   MainActivity, ClienteApplication, almacenamiento cifrado del token y recursos de Android

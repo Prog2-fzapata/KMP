@@ -1,5 +1,6 @@
-package ar.edu.um.prog2.fzapata.cliente.viewmodel
+package ar.edu.um.prog2.fzapata.cliente.viewmodel.validation
 
+import ar.edu.um.prog2.fzapata.cliente.viewmodel.RegisterForm
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

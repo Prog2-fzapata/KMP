@@ -6,6 +6,8 @@ import ar.edu.um.prog2.fzapata.cliente.network.AuthApi
 import ar.edu.um.prog2.fzapata.cliente.network.ErrorMessages
 import ar.edu.um.prog2.fzapata.cliente.network.model.LoginRequest
 import ar.edu.um.prog2.fzapata.cliente.session.SessionManager
+import ar.edu.um.prog2.fzapata.cliente.viewmodel.validation.RegisterValidator
+import ar.edu.um.prog2.fzapata.cliente.viewmodel.validation.fieldErrorsOf
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
