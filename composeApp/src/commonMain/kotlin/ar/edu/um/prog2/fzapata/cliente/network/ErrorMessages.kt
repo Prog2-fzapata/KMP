@@ -1,11 +1,21 @@
 package ar.edu.um.prog2.fzapata.cliente.network
 
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.HttpRequestTimeoutException
+import kotlinx.serialization.SerializationException
+
 // Es el traductor entre lo que dice un servicio y lo que ve el usuario
 class ErrorMessages {
 
-    // Recibe la excepción y la traduce por su código, si no, default NO_CONNECTION
-    fun forError(error: Throwable): String =
-        if (error is ApiException) forCode(error.code, error.status) else NO_CONNECTION
+    // Recibe la excepción y la traduce: por su código si el servicio respondió; si no, por lo que falló en el camino
+    fun forError(error: Throwable): String = when (error) {
+        is ApiException -> forCode(error.code, error.status)
+        // El servidor se alcanzó pero no respondió a tiempo (la conexión que no se logra abrir cuenta como falta de conexión)
+        is HttpRequestTimeoutException, is SocketTimeoutException -> TIMEOUT
+        // Respondió con algo que la app no sabe leer
+        is SerializationException -> UNREADABLE
+        else -> NO_CONNECTION
+    }
 
     // El code es un conjunto abierto: si no lo conocemos, decide el estado HTTP
     fun forCode(code: String?, status: Int): String = byCode[code] ?: forStatus(status)
@@ -54,6 +64,8 @@ class ErrorMessages {
 
     companion object {
         const val NO_CONNECTION = "No se pudo conectar con el servidor: hay que revisar la conexión."
+        const val TIMEOUT = "El servidor tardó demasiado en responder."
+        const val UNREADABLE = "La respuesta del servidor no se pudo interpretar."
         const val GENERIC = "No se pudo completar la operación."
     }
 }

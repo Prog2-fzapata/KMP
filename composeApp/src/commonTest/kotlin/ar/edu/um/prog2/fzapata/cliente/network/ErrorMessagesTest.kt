@@ -1,5 +1,10 @@
 package ar.edu.um.prog2.fzapata.cliente.network
 
+import io.ktor.client.network.sockets.ConnectTimeoutException
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.HttpRequestTimeoutException
+import kotlinx.io.IOException
+import kotlinx.serialization.SerializationException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
@@ -30,5 +35,16 @@ class ErrorMessagesTest {
     fun anUnknownCodeFallsBackToTheHttpStatus() {
         assertEquals("El servicio no está disponible por ahora.", messages.forCode("CODIGO_NUEVO", 503))
         assertEquals("No se encontró lo pedido.", messages.forCode(null, 404))
+    }
+
+    // Cada falla del camino tiene su texto: un timeout no es una conexión caída, y tampoco una respuesta ilegible
+    @Test
+    fun aFailureOnTheWayIsToldApartByItsKind() {
+        assertEquals(ErrorMessages.TIMEOUT, messages.forError(HttpRequestTimeoutException("http://turnos/api", 15_000)))
+        assertEquals(ErrorMessages.TIMEOUT, messages.forError(SocketTimeoutException("sin datos")))
+        assertEquals(ErrorMessages.UNREADABLE, messages.forError(SerializationException("no es un JSON")))
+        assertEquals(ErrorMessages.NO_CONNECTION, messages.forError(IOException("sin red")))
+        // No poder abrir la conexión a tiempo es no tener conexión, no un servidor lento
+        assertEquals(ErrorMessages.NO_CONNECTION, messages.forError(ConnectTimeoutException("no abre")))
     }
 }
