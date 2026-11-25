@@ -6,6 +6,8 @@ import ar.edu.um.prog2.fzapata.cliente.network.UserApi
 import ar.edu.um.prog2.fzapata.cliente.network.CatalogApi
 import ar.edu.um.prog2.fzapata.cliente.network.ErrorMessages
 import ar.edu.um.prog2.fzapata.cliente.network.HttpClientFactory
+import ar.edu.um.prog2.fzapata.cliente.network.ReservationStream
+import ar.edu.um.prog2.fzapata.cliente.network.StreamConnection
 import ar.edu.um.prog2.fzapata.cliente.network.TurnosApi
 import ar.edu.um.prog2.fzapata.cliente.session.SessionManager
 import ar.edu.um.prog2.fzapata.cliente.session.SessionStore
@@ -24,6 +26,8 @@ class AppContainer(val config: AppConfig, sessionStore: SessionStore) {
     val userApi = UserApi(httpClient, config)
     val catalogApi = CatalogApi(httpClient, config)
     val turnosApi = TurnosApi(httpClient, config)
+    // Los avisos de cambio de las reservas; antes de reconectar comprueba la sesión con un pedido normal
+    val reservationStream = ReservationStream(StreamConnection(httpClient, config)::connect, { turnosApi.reservations() })
 }
 
 // Las pantallas lo leen de aquí: así no lo llevan como campo (Voyager serializa las pantallas)

@@ -38,7 +38,8 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 // Los horarios libres de un profesional, por día; al llegar al final de la lista pide los 30 días que siguen
 class AvailabilityScreen(
     private val professionalId: Long,
-    private val professionalName: String
+    private val professionalName: String,
+    private val notice: String? = null
 ) : Screen {
 
     @OptIn(ExperimentalMaterial3Api::class) // TopAppBar aún es experimental
@@ -46,7 +47,7 @@ class AvailabilityScreen(
     override fun Content() {
         val container = LocalAppContainer.current
         val navigator = LocalNavigator.currentOrThrow
-        val viewModel = viewModel(key = key) { AvailabilityViewModel(container.turnosApi, professionalId, container.errorMessages) }
+        val viewModel = viewModel(key = key) { AvailabilityViewModel(container.turnosApi, professionalId, container.errorMessages, notice = notice) }
         val state by viewModel.state.collectAsState()
         // Los horarios llegan ordenados: agrupar por día conserva el orden de los días
         val days = remember(state.slots) { state.slots.groupBy { it.date }.entries.toList() }
@@ -56,9 +57,7 @@ class AvailabilityScreen(
 
         // Con la reserva creada se reemplaza esta pantalla: «Volver» lleva a la lista y no a horarios desactualizados
         LaunchedEffect(state.reservation) {
-            state.reservation?.let {
-                navigator.replace(ReservationScreen("${it.professionalFirstName} ${it.professionalLastName}", it.appointmentDate, it.startTime))
-            }
+            state.reservation?.let { navigator.replace(ReservationScreen(it.id)) }
         }
 
         Scaffold(
