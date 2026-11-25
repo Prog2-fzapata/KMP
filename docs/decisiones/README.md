@@ -13,3 +13,4 @@ Estados posibles: `aceptada`, `reemplazada por NNN` y `obsoleta`.
 | 005 | [Cliente HTTP: motor, errores y sesión vencida](005-cliente-http-errores-y-sesion-vencida.md) | aceptada |
 | 006 | [ViewModel por pantalla y pantalla de inicio según la sesión](006-viewmodel-y-pantalla-segun-la-sesion.md) | aceptada |
 | 007 | [Lista de profesionales: filtros, páginas y pedidos cancelables](007-lista-de-profesionales-filtros-y-paginas.md) | aceptada |
+| 008 | [Turnos disponibles: ventanas de 30 días, tope de un año y `kotlinx-datetime`](008-turnos-disponibles-ventanas-de-30-dias.md) | aceptada |

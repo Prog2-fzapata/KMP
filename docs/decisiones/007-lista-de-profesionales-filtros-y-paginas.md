@@ -13,9 +13,9 @@
 - Páginas de 20 elementos con scroll infinito: al acercarse al final se pide la siguiente. `X-Total-Count` dice cuándo parar; el encabezado `Link` no se usa. Si el total no llega, se toma lo recibido como todo lo que hay.
 - Cambiar un filtro cancela el pedido en curso y empieza otra vez desde la primera página.
 - Con un error pendiente la lista no vuelve a pedir sola al llegar al final: espera «Reintentar», que repite el pedido que falló.
-- El resumen de horarios es una línea de texto por profesional («Mar 13:00–16:00 · Jue 11:00–14:00»). Los días y las horas se dejan como texto del contrato y un día desconocido se muestra tal cual: no se usa `kotlinx-datetime`.
+- El resumen de horarios es una línea de texto por profesional («Mar 13:00–16:00 · Jue 11:00–14:00»). Los días y las horas se dejan como texto del contrato y un día desconocido se muestra tal cual: en este resumen no hace falta `kotlinx-datetime`.
 - Los modelos tienen solo los campos que la app usa; el resto de la respuesta se ignora.
-- Tocar un profesional abre `AvailabilityScreen`, provisoria hasta que KMP-05 muestre los turnos.
+- Tocar un profesional abre `AvailabilityScreen`, con sus turnos disponibles ([decisión 008](008-turnos-disponibles-ventanas-de-30-dias.md)).
 
 ## Alternativas descartadas
 
