@@ -49,6 +49,7 @@ class LoginScreen : Screen {
 
             LabeledCheckbox("Mantener la sesión abierta", state.rememberMe, viewModel::onRememberMeChange, enabled = !state.loading)
 
+            state.notice?.let { Text(it) }
             state.error?.let { Text(it, color = MaterialTheme.colorScheme.error) }
 
             if (state.loading) {

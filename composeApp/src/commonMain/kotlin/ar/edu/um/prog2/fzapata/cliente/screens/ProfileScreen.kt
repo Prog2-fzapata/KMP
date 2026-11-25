@@ -79,7 +79,7 @@ class ProfileScreen : Tab {
 
                 // Fuera del when: se puede cerrar la sesión aunque la cuenta no cargue
                 HorizontalDivider()
-                OutlinedButton(onClick = container.session::expire) { Text("Cerrar sesión") }
+                OutlinedButton(onClick = container.session::logout) { Text("Cerrar sesión") }
             }
         }
     }
