@@ -12,7 +12,7 @@ La app llama a los servicios de catálogo y turnos. Ambos responden sus errores 
 - El token sale de la sesión en cada pedido (`defaultRequest`), no una sola vez al crear el cliente.
 - Toda respuesta no exitosa se convierte en `ApiException(status, code, fieldErrors)`. Si el cuerpo no es un `problem+json` válido, queda solo el estado HTTP.
 - El `code` es un conjunto abierto. `ErrorMessages` traduce los códigos de las tablas de errores de los contratos y, ante uno desconocido, decide por el estado HTTP con un mensaje genérico.
-- El `failureReason` de una reserva también es texto abierto y no un enumerado (si la cátedra rechaza o vence un proceso, es el texto que ella informa): se muestra un mensaje genérico si no se reconoce, sin un `switch` sobre él.
+- El `failureReason` de una reserva también es texto abierto y no un enumerado (si la cátedra rechaza o vence un proceso, es el texto que ella informa): se muestra un mensaje genérico si no se reconoce. Desde la [decisión 016](016-estados-de-error-y-vencimiento.md) los motivos documentados tienen su mensaje, solo para elegir el texto.
 - Un `401` vacía la sesión solo si el código es `UNAUTHORIZED` y el pedido llevaba token.
 - No se instala el plugin de logs de Ktor: el JWT viaja en una cabecera y en el cuerpo de `POST /api/authenticate`, y sin logs no puede filtrarse.
 

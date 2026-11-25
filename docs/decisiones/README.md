@@ -21,3 +21,4 @@ Estados posibles: `aceptada`, `reemplazada por NNN` y `obsoleta`.
 | 013 | [Stream de cambios: una conexión mientras la pantalla mira, reconexión creciente y comprobación de sesión](013-stream-de-cambios-con-reconexion.md) | aceptada |
 | 014 | [Barra inferior con pestañas y perfil de la cuenta](014-barra-inferior-y-perfil-de-la-cuenta.md) | aceptada |
 | 015 | [Mis reservas: dos secciones por día, lista al día con el stream y cancelación con un camino por código](015-mis-reservas-y-cancelacion.md) | aceptada |
+| 016 | [Estados de error y vencimiento: un mensaje por tipo de falla, el motivo de la reserva y el aviso de sesión vencida](016-estados-de-error-y-vencimiento.md) | aceptada |
