@@ -27,9 +27,20 @@ data class TokenResponse(
     @SerialName("id_token") val idToken: String
 )
 
-// POST /api/account cambia solo los campos que llegan: con estos dos, el email y el resto quedan como están
+// GET /api/account trae más datos (id, idioma, imagen, roles) que la app no usa. El nombre y el apellido son null mientras no se carguen
 @Serializable
-data class UpdateNameRequest(
-    val firstName: String,
-    val lastName: String
+data class Account(
+    val login: String,
+    val firstName: String?,
+    val lastName: String?,
+    val email: String
+)
+
+// POST /api/account cambia solo los campos que llegan: Json no escribe los null por defecto, así que lo que quede en null no viaja
+// y el servicio lo deja como está
+@Serializable
+data class UpdateAccountRequest(
+    val firstName: String? = null,
+    val lastName: String? = null,
+    val email: String? = null
 )

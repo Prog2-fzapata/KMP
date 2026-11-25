@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import ar.edu.um.prog2.fzapata.cliente.network.ErrorMessages
 import ar.edu.um.prog2.fzapata.cliente.network.UserApi
+import ar.edu.um.prog2.fzapata.cliente.network.model.UpdateAccountRequest
 import ar.edu.um.prog2.fzapata.cliente.viewmodel.validation.PatientNameValidator
 import ar.edu.um.prog2.fzapata.cliente.viewmodel.validation.fieldErrorsOf
 import kotlinx.coroutines.CancellationException
@@ -50,7 +51,7 @@ class PatientNameViewModel(
         _state.update { it.copy(saving = true) }
         viewModelScope.launch {
             try {
-                api.updateName(current.firstName.trim(), current.lastName.trim())
+                api.updateAccount(UpdateAccountRequest(firstName = current.firstName.trim(), lastName = current.lastName.trim()))
                 _state.update { it.copy(saving = false) }
                 onSaved()
             } catch (e: CancellationException) {

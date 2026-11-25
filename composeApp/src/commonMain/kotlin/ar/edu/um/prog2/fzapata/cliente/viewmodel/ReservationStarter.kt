@@ -54,7 +54,7 @@ class ReservationStarter(
     // Antes de dejar que el usuario repita se mira si ya hay una reserva de ese horario; si no hay, se avisa con el error original
     private suspend fun findExistingReservation(error: Exception, professionalId: Long, slot: Slot): StartResult {
         val existing = try {
-            api.reservations().firstOrNull { isFor(it, professionalId, slot) }
+            api.reservations().items.firstOrNull { isFor(it, professionalId, slot) }
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {

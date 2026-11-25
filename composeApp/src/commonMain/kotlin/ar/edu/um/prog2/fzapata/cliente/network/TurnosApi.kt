@@ -2,6 +2,8 @@ package ar.edu.um.prog2.fzapata.cliente.network
 
 import ar.edu.um.prog2.fzapata.cliente.config.AppConfig
 import ar.edu.um.prog2.fzapata.cliente.network.model.Availability
+import ar.edu.um.prog2.fzapata.cliente.network.model.CancelReservationRequest
+import ar.edu.um.prog2.fzapata.cliente.network.model.Page
 import ar.edu.um.prog2.fzapata.cliente.network.model.Reservation
 import ar.edu.um.prog2.fzapata.cliente.network.model.SendPhoneRequest
 import ar.edu.um.prog2.fzapata.cliente.network.model.Slot
@@ -37,8 +39,14 @@ class TurnosApi(private val client: HttpClient, private val config: AppConfig) {
             timeout { requestTimeoutMillis = START_RESERVATION_TIMEOUT_MS }
         }.body()
 
-    // La primera página de las reservas del usuario (20), sin las vencidas ni las fallidas
-    suspend fun reservations(): List<Reservation> = client.get("${config.turnosUrl}/api/reservations").body()
+    // Una página de las reservas del usuario, de la más lejana a la más antigua. Sin status no trae las vencidas ni las fallidas;
+    // con status trae exactamente las de ese estado
+    suspend fun reservations(status: String? = null, page: Int = 0): Page<Reservation> =
+        client.get("${config.turnosUrl}/api/reservations") {
+            parameter("page", page)
+            parameter("size", RESERVATION_PAGE_SIZE)
+            status?.let { parameter("status", it) }
+        }.toPage(page, RESERVATION_PAGE_SIZE)
 
     // Una reserva ajena responde 404 igual que una inexistente
     suspend fun reservation(id: Long): Reservation = client.get("${config.turnosUrl}/api/reservations/$id").body()
@@ -50,7 +58,17 @@ class TurnosApi(private val client: HttpClient, private val config: AppConfig) {
             setBody(SendPhoneRequest(phoneNumber))
         }.body()
 
-    private companion object {
-        const val START_RESERVATION_TIMEOUT_MS = 45_000L
+    // 200 con la reserva en CANCELLED; solo se cancela una CONFIRMED. Sin motivo se envía sin cuerpo
+    suspend fun cancel(id: Long, reason: String?): Reservation =
+        client.post("${config.turnosUrl}/api/reservations/$id/cancel") {
+            reason?.let {
+                contentType(ContentType.Application.Json)
+                setBody(CancelReservationRequest(it))
+            }
+        }.body()
+
+    companion object {
+        const val RESERVATION_PAGE_SIZE = 20
+        private const val START_RESERVATION_TIMEOUT_MS = 45_000L
     }
 }
