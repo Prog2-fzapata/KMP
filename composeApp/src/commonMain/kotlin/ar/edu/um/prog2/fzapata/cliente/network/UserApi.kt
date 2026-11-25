@@ -11,8 +11,8 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
-// Un método por endpoint de usuarios del catálogo; los errores salen como ApiException
-class AuthApi(private val client: HttpClient, private val config: AppConfig) {
+// Un método por endpoint de usuarios del servicio de catálogo (registro y sesión); los errores salen como ApiException
+class UserApi(private val client: HttpClient, private val config: AppConfig) {
 
     // 201 sin cuerpo
     suspend fun register(request: RegisterRequest) {
