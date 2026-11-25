@@ -1,46 +1,38 @@
 package ar.edu.um.prog2.fzapata.cliente.screens
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.um.prog2.fzapata.cliente.LocalAppContainer
+import ar.edu.um.prog2.fzapata.cliente.screens.components.Centered
 import ar.edu.um.prog2.fzapata.cliente.screens.components.LabeledSwitch
+import ar.edu.um.prog2.fzapata.cliente.screens.components.LoadMoreWhenNearEnd
 import ar.edu.um.prog2.fzapata.cliente.screens.components.ProfessionalCard
+import ar.edu.um.prog2.fzapata.cliente.screens.components.RetryMessage
 import ar.edu.um.prog2.fzapata.cliente.screens.components.SearchField
 import ar.edu.um.prog2.fzapata.cliente.screens.components.fullName
 import ar.edu.um.prog2.fzapata.cliente.viewmodel.ProfessionalListViewModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
-
-// Cuántos elementos antes del final hay que estar para pedir la página siguiente
-private const val LOAD_MORE_MARGIN = 3
 
 class ProfessionalListScreen : Screen {
 
@@ -52,17 +44,8 @@ class ProfessionalListScreen : Screen {
         val viewModel = viewModel(key = key) { ProfessionalListViewModel(container.catalogApi, container.errorMessages) }
         val state by viewModel.state.collectAsState()
 
-        val listState = rememberLazyListState()
-        val nearTheEnd by remember {
-            derivedStateOf {
-                val info = listState.layoutInfo
-                (info.visibleItemsInfo.lastOrNull()?.index ?: 0) >= info.totalItemsCount - LOAD_MORE_MARGIN
-            }
-        }
-        // Se vuelve a evaluar al llegar cada página: si la lista sigue corta, pide la siguiente
-        LaunchedEffect(nearTheEnd, state.professionals.size) {
-            if (nearTheEnd) viewModel.loadMore()
-        }
+        val listState = rememberLazyListState() // sabe que elementos se ven y cuántos hay en total
+        LoadMoreWhenNearEnd(listState, state.professionals.size, viewModel::loadMore)
 
         Scaffold(
             topBar = {
@@ -114,21 +97,9 @@ class ProfessionalListScreen : Screen {
                     item { Centered { CircularProgressIndicator() } }
                 }
                 state.error?.let { message ->
-                    item {
-                        Centered {
-                            Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                                Text(message, color = MaterialTheme.colorScheme.error)
-                                Button(onClick = viewModel::retry) { Text("Reintentar") }
-                            }
-                        }
-                    }
+                    item { RetryMessage(message, viewModel::retry) }
                 }
             }
         }
     }
-}
-
-@Composable
-private fun Centered(content: @Composable () -> Unit) {
-    Column(modifier = Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) { content() }
 }
