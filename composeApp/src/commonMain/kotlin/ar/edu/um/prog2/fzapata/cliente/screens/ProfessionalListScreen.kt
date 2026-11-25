@@ -8,18 +8,19 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import ar.edu.um.prog2.fzapata.cliente.LocalAppContainer
@@ -31,41 +32,31 @@ import ar.edu.um.prog2.fzapata.cliente.screens.components.RetryMessage
 import ar.edu.um.prog2.fzapata.cliente.screens.components.SearchField
 import ar.edu.um.prog2.fzapata.cliente.screens.components.fullName
 import ar.edu.um.prog2.fzapata.cliente.viewmodel.ProfessionalListViewModel
-import ar.edu.um.prog2.fzapata.cliente.viewmodel.ResumeViewModel
-import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
+import cafe.adriel.voyager.navigator.tab.Tab
+import cafe.adriel.voyager.navigator.tab.TabOptions
 
-class ProfessionalListScreen : Screen {
+class ProfessionalListScreen : Tab {
+
+    override val options: TabOptions
+        @Composable get() = TabOptions(index = 0u, title = "Profesionales", icon = rememberVectorPainter(Icons.Default.Home))
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
     override fun Content() {
         val container = LocalAppContainer.current
-        val navigator = LocalNavigator.currentOrThrow
+        // Dentro de una pestaña, LocalNavigator es el de las pestañas; el de afuera (parent) es el que apila por encima de la barra
+        val navigator = checkNotNull(LocalNavigator.currentOrThrow.parent)
         val viewModel = viewModel(key = key) { ProfessionalListViewModel(container.catalogApi, container.errorMessages) }
         val state by viewModel.state.collectAsState()
-
-        val resume = viewModel(key = "$key-resume") { ResumeViewModel(container.turnosApi) }
-        val resumeId by resume.reservationId.collectAsState()
-
-        // Al abrir la app con una reserva en curso se vuelve a ella; la lista queda debajo
-        LaunchedEffect(resumeId) {
-            resumeId?.let {
-                navigator.push(ReservationScreen(it))
-                resume.onResumed() // al volver a la lista no se abre otra vez
-            }
-        }
 
         val listState = rememberLazyListState() // sabe que elementos se ven y cuántos hay en total
         LoadMoreWhenNearEnd(listState, state.professionals.size, viewModel::loadMore)
 
         Scaffold(
             topBar = {
-                TopAppBar(
-                    title = { Text("Profesionales") },
-                    actions = { TextButton(onClick = container.session::expire) { Text("Cerrar sesión") } }
-                )
+                TopAppBar(title = { Text("Profesionales") })
             }
         ) { padding ->
             LazyColumn(
