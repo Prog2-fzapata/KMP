@@ -19,3 +19,4 @@ Estados posibles: `aceptada`, `reemplazada por NNN` y `obsoleta`.
 | 011 | [Iniciar una reserva: confirmación, un camino por código y consulta antes de repetir](011-iniciar-una-reserva-sin-duplicados.md) | aceptada |
 | 012 | [Ingreso del teléfono: un diálogo cuando la cátedra lo pide, sin cuenta regresiva](012-ingreso-del-telefono-sin-cuenta-regresiva.md) | aceptada |
 | 013 | [Stream de cambios: una conexión mientras la pantalla mira, reconexión creciente y comprobación de sesión](013-stream-de-cambios-con-reconexion.md) | aceptada |
+| 014 | [Barra inferior con pestañas y perfil de la cuenta](014-barra-inferior-y-perfil-de-la-cuenta.md) | aceptada |
