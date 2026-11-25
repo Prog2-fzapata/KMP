@@ -6,6 +6,7 @@ import ar.edu.um.prog2.fzapata.cliente.network.AuthApi
 import ar.edu.um.prog2.fzapata.cliente.network.CatalogApi
 import ar.edu.um.prog2.fzapata.cliente.network.ErrorMessages
 import ar.edu.um.prog2.fzapata.cliente.network.HttpClientFactory
+import ar.edu.um.prog2.fzapata.cliente.network.TurnosApi
 import ar.edu.um.prog2.fzapata.cliente.session.SessionManager
 import ar.edu.um.prog2.fzapata.cliente.session.SessionStore
 import io.ktor.client.HttpClient
@@ -22,6 +23,7 @@ class AppContainer(val config: AppConfig, sessionStore: SessionStore) {
     val errorMessages = ErrorMessages()
     val authApi = AuthApi(httpClient, config)
     val catalogApi = CatalogApi(httpClient, config)
+    val turnosApi = TurnosApi(httpClient, config)
 }
 
 // Las pantallas lo leen de aquí: así no lo llevan como campo (Voyager serializa las pantallas)
