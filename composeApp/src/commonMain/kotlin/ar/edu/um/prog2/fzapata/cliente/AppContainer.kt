@@ -2,7 +2,7 @@ package ar.edu.um.prog2.fzapata.cliente
 
 import androidx.compose.runtime.staticCompositionLocalOf
 import ar.edu.um.prog2.fzapata.cliente.config.AppConfig
-import ar.edu.um.prog2.fzapata.cliente.network.AuthApi
+import ar.edu.um.prog2.fzapata.cliente.network.UserApi
 import ar.edu.um.prog2.fzapata.cliente.network.CatalogApi
 import ar.edu.um.prog2.fzapata.cliente.network.ErrorMessages
 import ar.edu.um.prog2.fzapata.cliente.network.HttpClientFactory
@@ -21,7 +21,7 @@ class AppContainer(val config: AppConfig, sessionStore: SessionStore) {
     val httpClient: HttpClient = HttpClientFactory(session).create()
     // ErrorMessages para poder traducir
     val errorMessages = ErrorMessages()
-    val authApi = AuthApi(httpClient, config)
+    val userApi = UserApi(httpClient, config)
     val catalogApi = CatalogApi(httpClient, config)
     val turnosApi = TurnosApi(httpClient, config)
 }

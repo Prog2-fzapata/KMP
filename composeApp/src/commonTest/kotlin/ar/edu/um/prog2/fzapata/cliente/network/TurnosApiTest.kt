@@ -1,13 +1,16 @@
 package ar.edu.um.prog2.fzapata.cliente.network
 
 import ar.edu.um.prog2.fzapata.cliente.config.AppConfig
+import ar.edu.um.prog2.fzapata.cliente.network.model.StartReservationRequest
 import ar.edu.um.prog2.fzapata.cliente.session.FakeSessionStore
 import ar.edu.um.prog2.fzapata.cliente.session.SessionManager
 import io.ktor.client.engine.mock.MockEngine
 import io.ktor.client.engine.mock.respond
 import io.ktor.client.request.HttpRequestData
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
+import io.ktor.http.content.TextContent
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
@@ -18,10 +21,10 @@ class TurnosApiTest {
 
     private val requests = mutableListOf<HttpRequestData>()
 
-    private fun apiAnswering(body: String): TurnosApi {
+    private fun apiAnswering(body: String, status: HttpStatusCode = HttpStatusCode.OK): TurnosApi {
         val engine = MockEngine { request ->
             requests += request
-            respond(body, HttpStatusCode.OK, headersOf(HttpHeaders.ContentType, "application/json"))
+            respond(body, status, headersOf(HttpHeaders.ContentType, "application/json"))
         }
         val client = HttpClientFactory(SessionManager(FakeSessionStore())).create(engine)
         return TurnosApi(client, AppConfig("http://catalogo", "http://turnos"))
@@ -50,6 +53,21 @@ class TurnosApiTest {
         val slots = apiAnswering(shuffled).availability(207, LocalDate(2026, 11, 25), LocalDate(2026, 11, 30))
 
         assertEquals(listOf("2026-11-25 12:30:00", "2026-11-25 13:00:00", "2026-11-30 18:00:00"), slots.map { "${it.date} ${it.startTime}" })
+    }
+
+    @Test
+    fun startingAReservationSendsTheSlotAndReadsTheReservation() = runTest {
+        val api = apiAnswering(TurnosResponses.CREATED, HttpStatusCode.Created)
+
+        val reservation = api.startReservation(StartReservationRequest(207, "2027-01-25", "18:00:00"))
+
+        val sent = requests.single()
+        assertEquals(HttpMethod.Post, sent.method)
+        assertEquals("/api/reservations", sent.url.encodedPath)
+        assertEquals("""{"professionalId":207,"date":"2027-01-25","startTime":"18:00:00"}""", (sent.body as TextContent).text)
+        assertEquals("WAITING_PHONE", reservation.status)
+        assertEquals("Diego Alvarez", "${reservation.professionalFirstName} ${reservation.professionalLastName}")
+        assertEquals("2027-01-25 18:00:00", "${reservation.appointmentDate} ${reservation.startTime}")
     }
 
     // Respuesta real de turnos (2026-11-24, profesional 207, un día); trae también campos que la app ignora

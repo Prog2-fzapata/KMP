@@ -9,7 +9,7 @@ Las pantallas solo dibujan: el estado y las llamadas a los servicios van en un `
 ## Decisión
 
 - Cada pantalla con lógica tiene su `ViewModel` de `androidx.lifecycle` (versión multiplataforma de JetBrains), que expone un `StateFlow` con el estado completo (campos, errores, cargando). La pantalla lo observa y le avisa los eventos; el `ViewModel` no conoce Compose ni Voyager.
-- Las pantallas toman las piezas compartidas de `LocalAppContainer`, un `CompositionLocal` como `LocalAppConfig`.
+- Las piezas compartidas (sesión, cliente HTTP, servicios y mensajes de error) las arma a mano `AppContainer`, una sola vez por proceso: lo crea `ClienteApplication`, así que no se recrea al rotar la pantalla. Las pantallas lo toman de `LocalAppContainer`, un `CompositionLocal`.
 - Cada pantalla pide su `ViewModel` con la clave de la propia pantalla (`viewModel(key = key)`): un login nuevo, tras cerrar sesión, arranca con el estado vacío.
 - Al iniciar sesión, el `ViewModel` solo guarda el token. La raíz observa el token de `SessionManager` y arma el `Navigator` de nuevo con la pantalla que corresponde: inicio con sesión, login sin ella. Lo mismo ocurre al cerrar sesión o ante un `401`, y no se puede volver con «atrás».
 - Al registrarse, la app inicia sesión sola con las mismas credenciales. Si el registro sale bien y el inicio falla, el mensaje dice que la cuenta ya existe: repetir el registro daría `LOGIN_ALREADY_USED`.
@@ -19,6 +19,7 @@ Las pantallas solo dibujan: el estado y las llamadas a los servicios van en un `
 
 ## Alternativas descartadas
 
+- Koin u otra librería de inyección: otra dependencia y otra forma de declarar módulos para pocas piezas; un contenedor manual deja ver qué depende de qué.
 - `ScreenModel` de Voyager: se libera con la pantalla, pero ata los `ViewModel` a esa librería y el MVVM habitual de MVVM usa el de `androidx`.
 - Una pantalla raíz con `replaceAll` en cada pantalla de login y cierre: cada una tendría que acordarse de navegar; observar la sesión en un solo lugar cubre también el `401`.
 - Dejar la validación al servicio: el usuario esperaría la red para saber que el login es corto.
