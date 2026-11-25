@@ -90,7 +90,7 @@ class ProfessionalListScreen : Screen {
                 }
 
                 items(state.professionals, key = { it.id }) { professional ->
-                    ProfessionalCard(professional, onClick = { navigator.push(AvailabilityScreen(professional.fullName())) })
+                    ProfessionalCard(professional, onClick = { navigator.push(AvailabilityScreen(professional.id, professional.fullName())) })
                 }
 
                 if (state.loadingMore) {

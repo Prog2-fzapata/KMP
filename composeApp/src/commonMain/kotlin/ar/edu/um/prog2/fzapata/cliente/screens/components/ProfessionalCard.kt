@@ -35,14 +35,3 @@ fun Professional.fullName() = "$firstName $lastName"
 private fun Professional.schedulesText(): String =
     if (weeklySchedules.isEmpty()) "Sin horarios"
     else weeklySchedules.joinToString(" · ") { "${dayLabel(it.dayOfWeek)} ${it.startTime.take(5)}–${it.endTime.take(5)}" }
-
-private fun dayLabel(day: String) = when (day) {
-    "MONDAY" -> "Lun"
-    "TUESDAY" -> "Mar"
-    "WEDNESDAY" -> "Mié"
-    "THURSDAY" -> "Jue"
-    "FRIDAY" -> "Vie"
-    "SATURDAY" -> "Sáb"
-    "SUNDAY" -> "Dom"
-    else -> day
-}
