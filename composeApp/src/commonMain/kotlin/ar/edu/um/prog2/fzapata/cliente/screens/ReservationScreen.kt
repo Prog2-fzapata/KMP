@@ -30,7 +30,10 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 
 // Una reserva en curso: espera que la cátedra pida el teléfono, lo pide al usuario y espera la confirmación
-class ReservationScreen(private val reservationId: Long) : Screen {
+class ReservationScreen(
+    private val reservationId: Long,
+    private val fromList: Boolean = false
+) : Screen {
 
     @OptIn(ExperimentalMaterial3Api::class) // TopAppBar aún es experimental
     @Composable
@@ -51,6 +54,11 @@ class ReservationScreen(private val reservationId: Long) : Screen {
         // Al salir, los horarios del profesional reemplazan a esta pantalla
         LaunchedEffect(state.leave) {
             val leave = state.leave ?: return@LaunchedEffect
+            // Desde la lista, cancelar el ingreso del teléfono vuelve a la lista: no hay un horario que elegir de nuevo
+            if (fromList && leave.notice == null) {
+                navigator.pop()
+                return@LaunchedEffect
+            }
             val current = reservation ?: return@LaunchedEffect
             navigator.replace(AvailabilityScreen(current.professionalId, "${current.professionalFirstName} ${current.professionalLastName}", leave.notice))
         }
