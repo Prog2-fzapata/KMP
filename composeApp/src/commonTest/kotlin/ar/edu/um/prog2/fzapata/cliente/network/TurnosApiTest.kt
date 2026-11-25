@@ -16,6 +16,8 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 class TurnosApiTest {
 
@@ -68,6 +70,30 @@ class TurnosApiTest {
         assertEquals("WAITING_PHONE", reservation.status)
         assertEquals("Diego Alvarez", "${reservation.professionalFirstName} ${reservation.professionalLastName}")
         assertEquals("2027-01-25 18:00:00", "${reservation.appointmentDate} ${reservation.startTime}")
+    }
+
+    @Test
+    fun aReservationIsReadByItsIdAndTellsIfThePhoneCanBeSent() = runTest {
+        val reservation = apiAnswering(TurnosResponses.ASKING_FOR_PHONE).reservation(9)
+
+        val sent = requests.single()
+        assertEquals(HttpMethod.Get, sent.method)
+        assertEquals("/api/reservations/9", sent.url.encodedPath)
+        assertEquals(9, reservation.id)
+        assertEquals("WAITING_PHONE", reservation.status)
+        assertTrue(reservation.canSubmitPhone)
+    }
+
+    @Test
+    fun sendingThePhoneSendsTheNumberAndReadsTheQueuedReservation() = runTest {
+        val reservation = apiAnswering(TurnosResponses.PHONE_QUEUED, HttpStatusCode.Accepted).sendPhone(9, "+5492613124578")
+
+        val sent = requests.single()
+        assertEquals(HttpMethod.Post, sent.method)
+        assertEquals("/api/reservations/9/phone", sent.url.encodedPath)
+        assertEquals("""{"phoneNumber":"+5492613124578"}""", (sent.body as TextContent).text)
+        assertEquals("PHONE_QUEUED", reservation.status)
+        assertFalse(reservation.canSubmitPhone)
     }
 
     // Respuesta real de turnos (2026-11-24, profesional 207, un día); trae también campos que la app ignora

@@ -3,6 +3,7 @@ package ar.edu.um.prog2.fzapata.cliente.network
 import ar.edu.um.prog2.fzapata.cliente.config.AppConfig
 import ar.edu.um.prog2.fzapata.cliente.network.model.Availability
 import ar.edu.um.prog2.fzapata.cliente.network.model.Reservation
+import ar.edu.um.prog2.fzapata.cliente.network.model.SendPhoneRequest
 import ar.edu.um.prog2.fzapata.cliente.network.model.Slot
 import ar.edu.um.prog2.fzapata.cliente.network.model.StartReservationRequest
 import io.ktor.client.HttpClient
@@ -38,6 +39,16 @@ class TurnosApi(private val client: HttpClient, private val config: AppConfig) {
 
     // La primera página de las reservas del usuario (20), sin las vencidas ni las fallidas
     suspend fun reservations(): List<Reservation> = client.get("${config.turnosUrl}/api/reservations").body()
+
+    // Una reserva ajena responde 404 igual que una inexistente
+    suspend fun reservation(id: Long): Reservation = client.get("${config.turnosUrl}/api/reservations/$id").body()
+
+    // 202 con la reserva en PHONE_QUEUED: la cátedra la confirma o la rechaza después
+    suspend fun sendPhone(id: Long, phoneNumber: String): Reservation =
+        client.post("${config.turnosUrl}/api/reservations/$id/phone") {
+            contentType(ContentType.Application.Json)
+            setBody(SendPhoneRequest(phoneNumber))
+        }.body()
 
     private companion object {
         const val START_RESERVATION_TIMEOUT_MS = 45_000L
