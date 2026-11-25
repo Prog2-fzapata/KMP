@@ -25,4 +25,4 @@
 
 ## Consecuencias
 
-Con el token vencido, el servidor admite 60 segundos de desfase de reloj: reconectar puede aceptarse y cerrarse otra vez antes de que el `401` llegue. Una respuesta de error que no se arregla esperando (un `400`, por ejemplo) se reintenta cada 8 segundos mientras la pantalla esté abierta. Si «Mis reservas» también escuchara, habría que compartir una sola conexión entre las dos pantallas.
+Con el token vencido, el servidor admite 60 segundos de desfase de reloj: reconectar puede aceptarse y cerrarse otra vez antes de que el `401` llegue. Una respuesta de error que no se arregla esperando (un `400`, por ejemplo) se reintenta cada 8 segundos mientras la pantalla esté abierta. «Mis reservas» también escucha ([decisión 015](015-mis-reservas-y-cancelacion.md)), pero nunca a la vez que la pantalla de la reserva: lo que tapa a una la saca de la pantalla y cierra su conexión, así que no hace falta compartirla.
