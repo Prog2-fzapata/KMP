@@ -4,6 +4,7 @@ import ar.edu.um.prog2.fzapata.cliente.config.AppConfig
 import ar.edu.um.prog2.fzapata.cliente.network.model.LoginRequest
 import ar.edu.um.prog2.fzapata.cliente.network.model.RegisterRequest
 import ar.edu.um.prog2.fzapata.cliente.network.model.TokenResponse
+import ar.edu.um.prog2.fzapata.cliente.network.model.UpdateNameRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
@@ -11,7 +12,7 @@ import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 
-// Un método por endpoint de usuarios del servicio de catálogo (registro y sesión); los errores salen como ApiException
+// Un método por endpoint de usuarios del servicio de catálogo (registro, sesión y cuenta); los errores salen como ApiException
 class UserApi(private val client: HttpClient, private val config: AppConfig) {
 
     // 201 sin cuerpo
@@ -28,4 +29,12 @@ class UserApi(private val client: HttpClient, private val config: AppConfig) {
             contentType(ContentType.Application.Json)
             setBody(request)
         }.body<TokenResponse>().idToken
+
+    // 200 sin cuerpo
+    suspend fun updateName(firstName: String, lastName: String) {
+        client.post("${config.catalogUrl}/api/account") {
+            contentType(ContentType.Application.Json)
+            setBody(UpdateNameRequest(firstName, lastName))
+        }
+    }
 }

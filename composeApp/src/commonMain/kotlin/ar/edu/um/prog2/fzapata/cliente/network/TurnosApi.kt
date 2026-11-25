@@ -2,11 +2,18 @@ package ar.edu.um.prog2.fzapata.cliente.network
 
 import ar.edu.um.prog2.fzapata.cliente.config.AppConfig
 import ar.edu.um.prog2.fzapata.cliente.network.model.Availability
+import ar.edu.um.prog2.fzapata.cliente.network.model.Reservation
 import ar.edu.um.prog2.fzapata.cliente.network.model.Slot
+import ar.edu.um.prog2.fzapata.cliente.network.model.StartReservationRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.timeout
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 import kotlinx.datetime.LocalDate
 
 // Un método por endpoint del servicio de turnos; los errores salen como ApiException
@@ -19,4 +26,20 @@ class TurnosApi(private val client: HttpClient, private val config: AppConfig) {
             parameter("from", from)
             parameter("to", to)
         }.body<Availability>().slots.sortedWith(compareBy({ it.date }, { it.startTime }))
+
+    // 201 con la reserva esperando el teléfono
+    suspend fun startReservation(request: StartReservationRequest): Reservation =
+        client.post("${config.turnosUrl}/api/reservations") {
+            contentType(ContentType.Application.Json)
+            setBody(request)
+            // Si la cátedra no responde, turnos puede tardar más que el tiempo general; cortar antes dejaría una reserva sin que la app lo sepa
+            timeout { requestTimeoutMillis = START_RESERVATION_TIMEOUT_MS }
+        }.body()
+
+    // La primera página de las reservas del usuario (20), sin las vencidas ni las fallidas
+    suspend fun reservations(): List<Reservation> = client.get("${config.turnosUrl}/api/reservations").body()
+
+    private companion object {
+        const val START_RESERVATION_TIMEOUT_MS = 45_000L
+    }
 }

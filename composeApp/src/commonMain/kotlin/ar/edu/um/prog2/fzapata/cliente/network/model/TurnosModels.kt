@@ -14,3 +14,22 @@ data class Slot(
     val date: String,
     val startTime: String
 )
+
+// El usuario de la reserva sale del token, no del cuerpo
+@Serializable
+data class StartReservationRequest(
+    val professionalId: Long,
+    val date: String,
+    val startTime: String
+)
+
+// status es texto: el contrato puede sumar estados. El profesional y el turno son los de la reserva, para reconocerla en la lista
+@Serializable
+data class Reservation(
+    val status: String,
+    val professionalId: Long,
+    val professionalFirstName: String,
+    val professionalLastName: String,
+    val appointmentDate: String,
+    val startTime: String
+)
