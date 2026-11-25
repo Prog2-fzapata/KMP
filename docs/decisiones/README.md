@@ -14,3 +14,5 @@ Estados posibles: `aceptada`, `reemplazada por NNN` y `obsoleta`.
 | 006 | [ViewModel por pantalla y pantalla de inicio según la sesión](006-viewmodel-y-pantalla-segun-la-sesion.md) | aceptada |
 | 007 | [Lista de profesionales: filtros, páginas y pedidos cancelables](007-lista-de-profesionales-filtros-y-paginas.md) | aceptada |
 | 008 | [Turnos disponibles: ventanas de 30 días, tope de un año y `kotlinx-datetime`](008-turnos-disponibles-ventanas-de-30-dias.md) | aceptada |
+| 009 | [Navegación con Voyager y pantallas como clases con `Content()`](009-navegacion-con-voyager-y-pantallas-en-clases.md) | aceptada |
+| 010 | [Paquete de la app, CI y código propio](010-paquete-y-ci-de-la-app.md) | aceptada |
