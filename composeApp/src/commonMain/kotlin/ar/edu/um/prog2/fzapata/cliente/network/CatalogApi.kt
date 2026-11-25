@@ -23,10 +23,7 @@ class CatalogApi(private val client: HttpClient, private val config: AppConfig) 
             if (filters.onlyEnabled) parameter("enabled", true)
             if (filters.onlyAvailable) parameter("available", true)
         }
-        val items = response.body<List<Professional>>()
-        // Sin el total no se sabe si hay más páginas: se toma lo recibido como todo lo que hay
-        val total = response.headers[TOTAL_COUNT]?.toIntOrNull() ?: (page * PROFESSIONAL_PAGE_SIZE + items.size)
-        return Page(items, total)
+        return response.toPage(page, PROFESSIONAL_PAGE_SIZE)
     }
 
     // Las habilitadas, en una sola página: se usan todas juntas, como chips
@@ -40,6 +37,5 @@ class CatalogApi(private val client: HttpClient, private val config: AppConfig) 
         const val PROFESSIONAL_PAGE_SIZE = 20
         // Las categorías se piden de una vez: 100 es lo máximo que admite el servicio por página
         private const val CATEGORY_PAGE_SIZE = 100
-        private const val TOTAL_COUNT = "X-Total-Count"
     }
 }

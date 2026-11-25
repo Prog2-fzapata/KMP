@@ -28,7 +28,7 @@ import cafe.adriel.voyager.navigator.tab.TabNavigator
 // con el Navigator de afuera, así que quedan por encima y tapan la barra.
 class MainScreen : Screen {
 
-    private val tabs = listOf<Tab>(ProfessionalListScreen(), ProfileScreen())
+    private val tabs = listOf<Tab>(ProfessionalListScreen(), MyReservationsScreen(), ProfileScreen())
 
     @Composable
     override fun Content() {

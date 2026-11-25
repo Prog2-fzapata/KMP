@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -15,7 +14,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -23,6 +21,7 @@ import ar.edu.um.prog2.fzapata.cliente.LocalAppContainer
 import ar.edu.um.prog2.fzapata.cliente.screens.components.Centered
 import ar.edu.um.prog2.fzapata.cliente.screens.components.PhoneDialog
 import ar.edu.um.prog2.fzapata.cliente.screens.components.RetryMessage
+import ar.edu.um.prog2.fzapata.cliente.screens.components.Waiting
 import ar.edu.um.prog2.fzapata.cliente.screens.components.dayTitle
 import ar.edu.um.prog2.fzapata.cliente.viewmodel.ReservationStep
 import ar.edu.um.prog2.fzapata.cliente.viewmodel.ReservationViewModel
@@ -31,7 +30,10 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 
 // Una reserva en curso: espera que la cátedra pida el teléfono, lo pide al usuario y espera la confirmación
-class ReservationScreen(private val reservationId: Long) : Screen {
+class ReservationScreen(
+    private val reservationId: Long,
+    private val fromList: Boolean = false
+) : Screen {
 
     @OptIn(ExperimentalMaterial3Api::class) // TopAppBar aún es experimental
     @Composable
@@ -52,6 +54,11 @@ class ReservationScreen(private val reservationId: Long) : Screen {
         // Al salir, los horarios del profesional reemplazan a esta pantalla
         LaunchedEffect(state.leave) {
             val leave = state.leave ?: return@LaunchedEffect
+            // Desde la lista, cancelar el ingreso del teléfono vuelve a la lista: no hay un horario que elegir de nuevo
+            if (fromList && leave.notice == null) {
+                navigator.pop()
+                return@LaunchedEffect
+            }
             val current = reservation ?: return@LaunchedEffect
             navigator.replace(AvailabilityScreen(current.professionalId, "${current.professionalFirstName} ${current.professionalLastName}", leave.notice))
         }
@@ -95,17 +102,6 @@ class ReservationScreen(private val reservationId: Long) : Screen {
                 onSend = viewModel::sendPhone,
                 onCancel = viewModel::onPhoneCancelled
             )
-        }
-    }
-}
-
-// El círculo de carga con lo que se está esperando
-@Composable
-private fun Waiting(text: String) {
-    Centered {
-        Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            CircularProgressIndicator()
-            Text(text)
         }
     }
 }

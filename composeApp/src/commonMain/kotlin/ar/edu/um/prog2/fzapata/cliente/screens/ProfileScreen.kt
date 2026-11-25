@@ -36,7 +36,7 @@ import cafe.adriel.voyager.navigator.tab.TabOptions
 class ProfileScreen : Tab {
 
     override val options: TabOptions
-        @Composable get() = TabOptions(index = 1u, title = "Mi perfil", icon = rememberVectorPainter(Icons.Default.Person))
+        @Composable get() = TabOptions(index = 2u, title = "Mi perfil", icon = rememberVectorPainter(Icons.Default.Person))
 
     @OptIn(ExperimentalMaterial3Api::class)
     @Composable
