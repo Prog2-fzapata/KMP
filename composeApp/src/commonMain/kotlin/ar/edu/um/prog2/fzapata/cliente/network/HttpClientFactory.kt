@@ -10,21 +10,21 @@ import io.ktor.client.plugins.HttpResponseValidator
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
+import io.ktor.client.plugins.sse.SSE
 import io.ktor.client.request.bearerAuth
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.request
 import io.ktor.http.HttpHeaders
 import io.ktor.http.isSuccess
 import io.ktor.serialization.kotlinx.json.json
-import kotlinx.serialization.json.Json
 
 class HttpClientFactory(private val session: SessionManager) {
 
-    private val json = Json { ignoreUnknownKeys = true }
-
     // El motor se puede reemplazar en las pruebas por uno falso
     fun create(engine: HttpClientEngine = CIO.create()): HttpClient = HttpClient(engine) {
-        install(ContentNegotiation) { json(json) }
+        install(ContentNegotiation) { json(appJson) }
+        // Reconectar el stream es decisión de la app (ReservationStream), no del plugin
+        install(SSE)
         install(HttpTimeout) {
             connectTimeoutMillis = CONNECT_TIMEOUT_MS
             requestTimeoutMillis = REQUEST_TIMEOUT_MS

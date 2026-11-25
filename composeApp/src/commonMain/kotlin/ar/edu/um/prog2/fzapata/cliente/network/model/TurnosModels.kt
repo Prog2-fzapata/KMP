@@ -37,6 +37,12 @@ data class Reservation(
     val canSubmitPhone: Boolean
 )
 
+// El aviso del stream trae un resumen de la reserva; la app toma el id y consulta la reserva, que es la fuente de verdad
+@Serializable
+data class ReservationUpdate(
+    val id: Long
+)
+
 // El número viaja limpio (sin espacios ni guiones), pero con el + si lo tiene
 @Serializable
 data class SendPhoneRequest(
