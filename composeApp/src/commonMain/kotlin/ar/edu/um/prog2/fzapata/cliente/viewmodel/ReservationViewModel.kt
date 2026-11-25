@@ -157,7 +157,7 @@ class ReservationViewModel(
     // Si la reserva terminó sin confirmarse no hay nada más que hacer: se vuelve a los horarios con el motivo
     private fun leaveFor(reservation: Reservation): Leave? = when (reservation.status) {
         "EXPIRED" -> Leave("${messages.forCode(RESERVATION_EXPIRED, HTTP_CONFLICT)} $CHOOSE_AGAIN")
-        "FAILED" -> Leave("No se pudo completar la reserva. $CHOOSE_AGAIN")
+        "FAILED" -> Leave("${messages.forFailure(reservation.failureReason)} $CHOOSE_AGAIN")
         "CANCELLED" -> Leave("La reserva se canceló.")
         else -> null
     }

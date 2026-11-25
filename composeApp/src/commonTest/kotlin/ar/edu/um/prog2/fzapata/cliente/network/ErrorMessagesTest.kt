@@ -47,4 +47,11 @@ class ErrorMessagesTest {
         // No poder abrir la conexión a tiempo es no tener conexión, no un servidor lento
         assertEquals(ErrorMessages.NO_CONNECTION, messages.forError(ConnectTimeoutException("no abre")))
     }
+
+    @Test
+    fun aKnownFailureReasonHasItsOwnMessageAndAnUnknownOneIsGeneric() {
+        assertEquals("No se pudo comunicar con la cátedra: no se reservó nada.", messages.forFailure("CATEDRA_NOT_REACHED"))
+        assertEquals(ErrorMessages.FAILED, messages.forFailure("MOTIVO_NUEVO"))
+        assertEquals(ErrorMessages.FAILED, messages.forFailure(null))
+    }
 }
