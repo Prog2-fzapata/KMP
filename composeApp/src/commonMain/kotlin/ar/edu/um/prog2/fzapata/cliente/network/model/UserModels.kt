@@ -26,3 +26,10 @@ data class LoginRequest(
 data class TokenResponse(
     @SerialName("id_token") val idToken: String
 )
+
+// POST /api/account cambia solo los campos que llegan: con estos dos, el email y el resto quedan como están
+@Serializable
+data class UpdateNameRequest(
+    val firstName: String,
+    val lastName: String
+)

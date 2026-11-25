@@ -2,7 +2,7 @@ package ar.edu.um.prog2.fzapata.cliente.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import ar.edu.um.prog2.fzapata.cliente.network.AuthApi
+import ar.edu.um.prog2.fzapata.cliente.network.UserApi
 import ar.edu.um.prog2.fzapata.cliente.network.ErrorMessages
 import ar.edu.um.prog2.fzapata.cliente.network.model.LoginRequest
 import ar.edu.um.prog2.fzapata.cliente.session.SessionManager
@@ -22,7 +22,7 @@ data class LoginState(
 )
 
 class LoginViewModel(
-    private val api: AuthApi,
+    private val api: UserApi,
     private val session: SessionManager,
     private val messages: ErrorMessages
 ) : ViewModel() {

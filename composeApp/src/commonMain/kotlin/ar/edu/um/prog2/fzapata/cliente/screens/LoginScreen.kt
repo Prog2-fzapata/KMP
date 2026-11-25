@@ -34,7 +34,7 @@ class LoginScreen : Screen {
         val container = LocalAppContainer.current
         val navigator = LocalNavigator.currentOrThrow
         // Con la clave de esta pantalla, un login nuevo (tras cerrar sesión) arranca con el estado vacío
-        val viewModel = viewModel(key = key) { LoginViewModel(container.authApi, container.session, container.errorMessages) }
+        val viewModel = viewModel(key = key) { LoginViewModel(container.userApi, container.session, container.errorMessages) }
         val state by viewModel.state.collectAsState()
 
         Column(

@@ -1,4 +1,4 @@
-package ar.edu.um.prog2.fzapata.cliente.viewmodel
+package ar.edu.um.prog2.fzapata.cliente.viewmodel.validation
 
 import ar.edu.um.prog2.fzapata.cliente.network.ApiException
 import ar.edu.um.prog2.fzapata.cliente.network.ErrorMessages

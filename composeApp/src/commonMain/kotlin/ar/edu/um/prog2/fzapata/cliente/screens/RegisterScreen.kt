@@ -33,7 +33,7 @@ class RegisterScreen : Screen {
     override fun Content() {
         val container = LocalAppContainer.current
         val navigator = LocalNavigator.currentOrThrow
-        val viewModel = viewModel(key = key) { RegisterViewModel(container.authApi, container.session, container.errorMessages) }
+        val viewModel = viewModel(key = key) { RegisterViewModel(container.userApi, container.session, container.errorMessages) }
         val state by viewModel.state.collectAsState()
         val form = state.form
         val errors = state.fieldErrors
