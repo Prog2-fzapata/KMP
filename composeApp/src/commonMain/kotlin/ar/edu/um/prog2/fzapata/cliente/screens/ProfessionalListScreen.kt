@@ -16,6 +16,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
@@ -30,6 +31,7 @@ import ar.edu.um.prog2.fzapata.cliente.screens.components.RetryMessage
 import ar.edu.um.prog2.fzapata.cliente.screens.components.SearchField
 import ar.edu.um.prog2.fzapata.cliente.screens.components.fullName
 import ar.edu.um.prog2.fzapata.cliente.viewmodel.ProfessionalListViewModel
+import ar.edu.um.prog2.fzapata.cliente.viewmodel.ResumeViewModel
 import cafe.adriel.voyager.core.screen.Screen
 import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
@@ -43,6 +45,17 @@ class ProfessionalListScreen : Screen {
         val navigator = LocalNavigator.currentOrThrow
         val viewModel = viewModel(key = key) { ProfessionalListViewModel(container.catalogApi, container.errorMessages) }
         val state by viewModel.state.collectAsState()
+
+        val resume = viewModel(key = "$key-resume") { ResumeViewModel(container.turnosApi) }
+        val resumeId by resume.reservationId.collectAsState()
+
+        // Al abrir la app con una reserva en curso se vuelve a ella; la lista queda debajo
+        LaunchedEffect(resumeId) {
+            resumeId?.let {
+                navigator.push(ReservationScreen(it))
+                resume.onResumed() // al volver a la lista no se abre otra vez
+            }
+        }
 
         val listState = rememberLazyListState() // sabe que elementos se ven y cuántos hay en total
         LoadMoreWhenNearEnd(listState, state.professionals.size, viewModel::loadMore)

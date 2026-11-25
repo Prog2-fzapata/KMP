@@ -44,11 +44,13 @@ class AvailabilityViewModel(
     private val api: TurnosApi,
     private val professionalId: Long,
     private val messages: ErrorMessages,
-    private val starter: ReservationStarter = ReservationStarter(api, messages)
+    private val starter: ReservationStarter = ReservationStarter(api, messages),
+    // Un aviso para mostrar desde el principio, por ejemplo cuando se vuelve de una reserva que venció
+    notice: String? = null
 ) : ViewModel() {
 
     // Estado inicial con loading = true
-    private val _state = MutableStateFlow(AvailabilityState(loading = true))
+    private val _state = MutableStateFlow(AvailabilityState(loading = true, notice = notice))
     val state: StateFlow<AvailabilityState> = _state.asStateFlow()
 
     // El reloj de Kotlin 2.2 todavía es experimental: se acepta a propósito

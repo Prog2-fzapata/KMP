@@ -17,3 +17,5 @@ Estados posibles: `aceptada`, `reemplazada por NNN` y `obsoleta`.
 | 009 | [Navegación con Voyager y pantallas como clases con `Content()`](009-navegacion-con-voyager-y-pantallas-en-clases.md) | aceptada |
 | 010 | [Paquete de la app, CI y código propio](010-paquete-y-ci-de-la-app.md) | aceptada |
 | 011 | [Iniciar una reserva: confirmación, un camino por código y consulta antes de repetir](011-iniciar-una-reserva-sin-duplicados.md) | aceptada |
+| 012 | [Ingreso del teléfono: un diálogo cuando la cátedra lo pide, sin cuenta regresiva](012-ingreso-del-telefono-sin-cuenta-regresiva.md) | aceptada |
+| 013 | [Stream de cambios: una conexión mientras la pantalla mira, reconexión creciente y comprobación de sesión](013-stream-de-cambios-con-reconexion.md) | aceptada |
