@@ -16,3 +16,4 @@ Estados posibles: `aceptada`, `reemplazada por NNN` y `obsoleta`.
 | 008 | [Turnos disponibles: ventanas de 30 días, tope de un año y `kotlinx-datetime`](008-turnos-disponibles-ventanas-de-30-dias.md) | aceptada |
 | 009 | [Navegación con Voyager y pantallas como clases con `Content()`](009-navegacion-con-voyager-y-pantallas-en-clases.md) | aceptada |
 | 010 | [Paquete de la app, CI y código propio](010-paquete-y-ci-de-la-app.md) | aceptada |
+| 011 | [Iniciar una reserva: confirmación, un camino por código y consulta antes de repetir](011-iniciar-una-reserva-sin-duplicados.md) | aceptada |
