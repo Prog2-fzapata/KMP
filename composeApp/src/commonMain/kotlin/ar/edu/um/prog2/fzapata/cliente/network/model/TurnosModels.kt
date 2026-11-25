@@ -43,6 +43,12 @@ data class ReservationUpdate(
     val id: Long
 )
 
+// El motivo es opcional: sin motivo la cancelación se envía sin cuerpo
+@Serializable
+data class CancelReservationRequest(
+    val reason: String
+)
+
 // El número viaja limpio (sin espacios ni guiones), pero con el + si lo tiene
 @Serializable
 data class SendPhoneRequest(

@@ -11,22 +11,25 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.content.TextContent
+import io.ktor.client.utils.EmptyContent
 import io.ktor.http.headersOf
 import kotlinx.coroutines.test.runTest
 import kotlinx.datetime.LocalDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 class TurnosApiTest {
 
     private val requests = mutableListOf<HttpRequestData>()
 
-    private fun apiAnswering(body: String, status: HttpStatusCode = HttpStatusCode.OK): TurnosApi {
+    private fun apiAnswering(body: String, status: HttpStatusCode = HttpStatusCode.OK, totalCount: Int? = null): TurnosApi {
         val engine = MockEngine { request ->
             requests += request
-            respond(body, status, headersOf(HttpHeaders.ContentType, "application/json"))
+            val headers = headersOf(HttpHeaders.ContentType to listOf("application/json"), "X-Total-Count" to listOfNotNull(totalCount?.toString()))
+            respond(body, status, headers)
         }
         val client = HttpClientFactory(SessionManager(FakeSessionStore())).create(engine)
         return TurnosApi(client, AppConfig("http://catalogo", "http://turnos"))
@@ -94,6 +97,47 @@ class TurnosApiTest {
         assertEquals("""{"phoneNumber":"+5492613124578"}""", (sent.body as TextContent).text)
         assertEquals("PHONE_QUEUED", reservation.status)
         assertFalse(reservation.canSubmitPhone)
+    }
+
+    @Test
+    fun theReservationsAskForThePageAndTheStatusAndReadTheTotal() = runTest {
+        val api = apiAnswering(TurnosResponses.ONLY_CONFIRMED, totalCount = 41)
+
+        val page = api.reservations("CONFIRMED", 2)
+
+        val sent = requests.single().url
+        assertEquals("/api/reservations", sent.encodedPath)
+        assertEquals("2", sent.parameters["page"])
+        assertEquals("20", sent.parameters["size"])
+        assertEquals("CONFIRMED", sent.parameters["status"])
+        assertEquals(41, page.total)
+        assertEquals(listOf(17L), page.items.map { it.id })
+    }
+
+    @Test
+    fun withoutAStatusTheReservationsAreNotFilteredAndWithoutTheHeaderTheTotalIsWhatArrived() = runTest {
+        val page = apiAnswering(TurnosResponses.IN_PROGRESS_AND_CONFIRMED).reservations()
+
+        assertNull(requests.single().url.parameters["status"])
+        assertEquals(2, page.total)
+    }
+
+    @Test
+    fun cancellingSendsTheReasonAndReadsTheCancelledReservation() = runTest {
+        val reservation = apiAnswering(TurnosResponses.CANCELLED_ONE).cancel(17, "No puedo asistir")
+
+        val sent = requests.single()
+        assertEquals(HttpMethod.Post, sent.method)
+        assertEquals("/api/reservations/17/cancel", sent.url.encodedPath)
+        assertEquals("""{"reason":"No puedo asistir"}""", (sent.body as TextContent).text)
+        assertEquals("CANCELLED", reservation.status)
+    }
+
+    @Test
+    fun cancellingWithoutAReasonSendsNoBody() = runTest {
+        apiAnswering(TurnosResponses.CANCELLED_ONE).cancel(17, null)
+
+        assertTrue(requests.single().body is EmptyContent)
     }
 
     // Respuesta real de turnos (2026-11-24, profesional 207, un día); trae también campos que la app ignora

@@ -29,7 +29,7 @@ class ResumeViewModel(private val api: TurnosApi) : ViewModel() {
     // La primera en curso de la primera página de reservas. Si no se puede consultar no pasa nada grave: el usuario sigue en la lista
     internal suspend fun findInProgress(): Long? =
         try {
-            api.reservations().firstOrNull { !ReservationStep.of(it).finished }?.id
+            api.reservations().items.firstOrNull { !ReservationStep.of(it).finished }?.id
         } catch (e: CancellationException) {
             throw e
         } catch (e: Exception) {
