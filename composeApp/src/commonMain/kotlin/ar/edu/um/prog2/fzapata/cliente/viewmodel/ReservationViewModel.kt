@@ -43,7 +43,7 @@ data class ReservationState(
     val step: ReservationStep? get() = reservation?.let(ReservationStep::of)
 
     // Confirmada o terminada: ya no hace falta escuchar cambios
-    val finished: Boolean get() = step == ReservationStep.CONFIRMED || step == ReservationStep.OVER
+    val finished: Boolean get() = step?.finished == true
 }
 
 // Sigue una reserva hasta que se confirma: espera el pedido de teléfono de la cátedra, lo envía y espera el resultado

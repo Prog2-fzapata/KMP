@@ -18,6 +18,9 @@ enum class ReservationStep {
     // Venció, falló o se canceló: no hay más que hacer con esta reserva
     OVER;
 
+    // Confirmada o terminada: ya no hay nada que esperar ni pedir
+    val finished: Boolean get() = this == CONFIRMED || this == OVER
+
     companion object {
         // status es texto abierto: lo que no se reconoce cuenta como que falta el pedido de la cátedra
         fun of(reservation: Reservation): ReservationStep = when {
