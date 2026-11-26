@@ -1,3 +1,9 @@
+<!-- calidad:inicio -->
+![Calidad](https://img.shields.io/badge/Calidad-sin%20c%C3%B3digo-lightgrey) ![Aprobar](https://img.shields.io/badge/Aprobar-no-red) ![Destacar](https://img.shields.io/badge/Destacar-no-lightgrey)
+
+**Calidad (7 dimensiones):** sin código en `main` (no evaluable).
+<!-- calidad:fin -->
+
 # KMP: app de turnos
 
 App Android hecha con Kotlin Multiplatform y Compose Multiplatform. Consume dos servicios: el de catálogo (`ServicioCatalogo`, puerto `8081`) y el de turnos (`ServicioTurnos`, puerto `8082`).
