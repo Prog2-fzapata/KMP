@@ -18,7 +18,9 @@ data class LoginState(
     val password: String = "",
     val rememberMe: Boolean = false,
     val loading: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    // Un aviso que no es un error: la sesión venció
+    val notice: String? = null
 )
 
 class LoginViewModel(
@@ -27,7 +29,8 @@ class LoginViewModel(
     private val messages: ErrorMessages
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(LoginState())
+    // Se lee una vez, al abrirse el login: la app vuelve acá justo después de vaciar la sesión
+    private val _state = MutableStateFlow(LoginState(notice = if (session.expired) SESSION_EXPIRED else null))
     val state: StateFlow<LoginState> = _state.asStateFlow()
 
     fun onUsernameChange(username: String) = _state.update { it.copy(username = username) }
@@ -46,7 +49,7 @@ class LoginViewModel(
             return
         }
 
-        _state.update { it.copy(loading = true, error = null) }
+        _state.update { it.copy(loading = true, error = null, notice = null) }
         viewModelScope.launch {
             try {
                 val token = api.authenticate(LoginRequest(current.username.trim(), current.password, current.rememberMe))
@@ -62,6 +65,7 @@ class LoginViewModel(
     }
 
     companion object {
+        const val SESSION_EXPIRED = "La sesión venció: iniciá sesión de nuevo."
         const val MISSING_DATA = "Hay que completar el usuario y la contraseña."
     }
 }

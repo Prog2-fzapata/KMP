@@ -116,4 +116,17 @@ class ReservationViewModelTest {
         assertEquals("El tiempo para confirmar la reserva terminó. Elegí el horario de nuevo.", state.leave?.notice)
         assertTrue(state.finished)
     }
+
+    // La misma reserva vencida, pero fallida por el motivo que se indique
+    private fun failedBecause(reason: String) =
+        TurnosResponses.EXPIRED.replace("\"status\":\"EXPIRED\"", "\"status\":\"FAILED\"").replace("HOLD_EXPIRED", reason)
+
+    @Test
+    fun aFailedReservationLeavesWithItsReasonOrAGenericNotice() = runTest {
+        current = failedBecause("SLOT_ALREADY_HELD")
+        assertEquals("Ese horario ya no está disponible. Elegí el horario de nuevo.", viewModel().state.first { it.leave != null }.leave?.notice)
+
+        current = failedBecause("MOTIVO_NUEVO")
+        assertEquals("No se pudo completar la reserva. Elegí el horario de nuevo.", viewModel().state.first { it.leave != null }.leave?.notice)
+    }
 }

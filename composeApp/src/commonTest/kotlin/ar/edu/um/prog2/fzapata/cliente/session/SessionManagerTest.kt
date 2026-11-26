@@ -2,7 +2,9 @@ package ar.edu.um.prog2.fzapata.cliente.session
 
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 class SessionManagerTest {
 
@@ -36,5 +38,24 @@ class SessionManagerTest {
 
         assertNull(session.token())
         assertNull(store.load())
+    }
+
+    // El login avisa de la sesión vencida solo si no fue el usuario quien la cerró
+    @Test
+    fun onlyAnExpiredSessionIsMarkedAsExpired() {
+        val store = FakeSessionStore("jwt")
+        val session = SessionManager(store)
+
+        session.logout()
+        assertNull(store.load())
+        assertNull(session.tokenFlow.value)
+        assertFalse(session.expired)
+
+        session.save("jwt")
+        session.expire()
+        assertTrue(session.expired)
+
+        session.save("otro")
+        assertFalse(session.expired)
     }
 }

@@ -1,13 +1,21 @@
 # KMP: app de turnos
 
-App Android hecha con Kotlin Multiplatform y Compose Multiplatform. Permite registrarse, buscar profesionales, ver su disponibilidad y reservar turnos. Consume dos servicios: el de catálogo (`ServicioCatalogo`, puerto `8081`) y el de turnos (`ServicioTurnos`, puerto `8082`).
+App Android hecha con Kotlin Multiplatform y Compose Multiplatform. Consume dos servicios: el de catálogo (`ServicioCatalogo`, puerto `8081`) y el de turnos (`ServicioTurnos`, puerto `8082`).
 
-Estado: proyecto base (KMP-01), cliente HTTP con sesión y manejo de errores (KMP-02), registro e inicio de sesión (KMP-03), la lista de profesionales con filtros (KMP-04), los turnos disponibles de cada profesional (KMP-05), el inicio de una reserva (KMP-06) y el ingreso del teléfono con el stream de cambios de las reservas (KMP-07 y KMP-08), la barra inferior con la sección Mi perfil (issue #21) y Mis reservas con su cancelación (KMP-09). Las demás pantallas se agregan issue por issue.
+## Qué hace
+
+- Crear una cuenta, iniciar sesión (con la opción de mantenerla abierta) y cerrarla; la sesión vencida avisa en el login.
+- Buscar profesionales por nombre y categoría, con los filtros «Solo habilitados» y «Solo con horarios», y ver los horarios disponibles de cada uno.
+- Reservar un horario: la cátedra pide el teléfono, la app lo envía y la reserva se confirma, vence o falla; la app sigue esos cambios en tiempo real.
+- Ver las reservas propias (próximas y anteriores, con filtro por estado) y cancelar una confirmada, con un motivo opcional.
+- Ver y editar los datos de la cuenta (nombre, apellido y email).
+- Mostrar un mensaje claro en cada falla (sin conexión, servidor lento, servicio caído, reserva vencida) y dejar reintentar.
 
 ## Documentos
 
 | Documento | Qué explica |
 | --- | --- |
+| [Arquitectura](docs/arquitectura.md) | El sistema completo (app, servicios, bases e integraciones con la cátedra), la app por dentro, el flujo de una reserva y el resumen de decisiones |
 | [Decisiones de diseño](docs/decisiones/README.md) | Cada decisión técnica, con sus alternativas descartadas y consecuencias |
 
 ## Requisitos
@@ -43,6 +51,26 @@ export JAVA_HOME=/ruta/al/jdk-21
 ./gradlew check                            # corre las pruebas y el análisis de lint
 ```
 
+## Pruebas
+
+```bash
+./gradlew check
+```
+
+Corre las pruebas de `commonTest` (`kotlin-test` y el motor falso de Ktor) y el análisis de lint. Cubren la traducción de los errores `problem+json`, las validaciones de los formularios, la lectura de los eventos del stream y las reglas de cada pantalla (los `ViewModel`). Las pruebas de interfaz no se hacen ([decisión 003](docs/decisiones/003-pruebas-acotadas-y-sin-sonarcloud.md)). El mismo comando corre en cada push y pull request ([`.github/workflows/build.yml`](.github/workflows/build.yml)).
+
+## Probar de punta a punta
+
+1. **Levantar los servicios.** Hace falta la VPN de la cátedra: el catálogo lee su Redis y su Kafka, y turnos usa su Kafka. Cada servicio trae su `docker-compose.yml` y su `.env` (ver su README). Con los `docker-compose.yml` separados, en Linux el contenedor de turnos no alcanza al de catálogo; en el repo `Documentacion`, carpeta `infra`, hay un compose conjunto que lo resuelve. Con los dos arriba, `http://localhost:8081/actuator/health` y `http://localhost:8082/actuator/health` responden `UP`. Al primer arranque el catálogo se sincroniza con la cátedra y los profesionales aparecen cuando termina.
+2. **Instalar la app** en el emulador o el teléfono, como se explica en «Ejecutar» (o con el botón de ejecutar de Android Studio).
+3. **Recorrer el flujo:**
+   - «Crear una cuenta» con usuario, email y contraseña, «Registrarme» y después «Ingresar».
+   - En **Mi perfil**, cargar nombre y apellido: sin ellos el servicio no deja reservar (la app también los pide al reservar).
+   - En **Profesionales**, buscar y filtrar; tocar uno para ver sus horarios y tocar un horario para reservar.
+   - Pasados unos segundos la cátedra pide el teléfono: escribirlo y esperar el «Turno confirmado».
+   - En **Mis reservas**, ver la reserva en «Próximas», abrirla y usar «Cancelar turno» (el motivo es opcional).
+   - Para ver los errores, detener un servicio (por ejemplo `docker compose stop turnos`) y repetir una acción: la app muestra un mensaje según la falla y ofrece reintentar.
+
 ## Estructura
 
 ```
@@ -57,6 +85,7 @@ composeApp/src/commonMain/    código compartido
 composeApp/src/androidMain/   MainActivity, ClienteApplication, almacenamiento cifrado del token y recursos de Android
 composeApp/src/debug/         manifiesto extra solo de debug (texto plano)
 composeApp/src/commonTest/    pruebas
+docs/                         arquitectura y decisiones de diseño
 ```
 
 Paquete y `applicationId`: `ar.edu.um.prog2.fzapata.cliente`.

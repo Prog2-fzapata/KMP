@@ -24,7 +24,8 @@ data class StartReservationRequest(
 )
 
 // status es texto: el contrato puede sumar estados. El profesional y el turno son los de la reserva, para reconocerla en la lista.
-// canSubmitPhone es true cuando la cátedra ya pidió el teléfono, y vuelve a serlo si lo rechaza
+// canSubmitPhone es true cuando la cátedra ya pidió el teléfono, y vuelve a serlo si lo rechaza.
+// failureReason es texto abierto: solo trae un valor cuando la reserva falló o venció
 @Serializable
 data class Reservation(
     val id: Long,
@@ -34,7 +35,8 @@ data class Reservation(
     val professionalLastName: String,
     val appointmentDate: String,
     val startTime: String,
-    val canSubmitPhone: Boolean
+    val canSubmitPhone: Boolean,
+    val failureReason: String? = null
 )
 
 // El aviso del stream trae un resumen de la reserva; la app toma el id y consulta la reserva, que es la fuente de verdad

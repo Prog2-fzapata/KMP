@@ -1,11 +1,24 @@
 package ar.edu.um.prog2.fzapata.cliente.network
 
+import io.ktor.client.network.sockets.SocketTimeoutException
+import io.ktor.client.plugins.HttpRequestTimeoutException
+import kotlinx.serialization.SerializationException
+
 // Es el traductor entre lo que dice un servicio y lo que ve el usuario
 class ErrorMessages {
 
-    // Recibe la excepción y la traduce por su código, si no, default NO_CONNECTION
-    fun forError(error: Throwable): String =
-        if (error is ApiException) forCode(error.code, error.status) else NO_CONNECTION
+    // Recibe la excepción y la traduce: por su código si el servicio respondió; si no, por lo que falló en el camino
+    fun forError(error: Throwable): String = when (error) {
+        is ApiException -> forCode(error.code, error.status)
+        // El servidor se alcanzó pero no respondió a tiempo (la conexión que no se logra abrir cuenta como falta de conexión)
+        is HttpRequestTimeoutException, is SocketTimeoutException -> TIMEOUT
+        // Respondió con algo que la app no sabe leer
+        is SerializationException -> UNREADABLE
+        else -> NO_CONNECTION
+    }
+
+    // Por qué falló una reserva. El motivo es un conjunto abierto: el que no se conoce cae en un mensaje genérico
+    fun forFailure(reason: String?): String = failureByReason[reason] ?: FAILED
 
     // El code es un conjunto abierto: si no lo conocemos, decide el estado HTTP
     fun forCode(code: String?, status: Int): String = byCode[code] ?: forStatus(status)
@@ -52,8 +65,20 @@ class ErrorMessages {
         "DATABASE_UNAVAILABLE" to "El servicio no puede acceder a sus datos en este momento."
     )
 
+    private val failureByReason = mapOf(
+        "SLOT_ALREADY_HELD" to "Ese horario ya no está disponible.",
+        "SLOT_ALREADY_RESERVED" to "Ese horario ya no está disponible.",
+        "PROFESSIONAL_DISABLED" to "El profesional no está disponible.",
+        "PROFESSIONAL_NOT_FOUND" to "El profesional no está disponible.",
+        "CATEDRA_NOT_REACHED" to "No se pudo comunicar con la cátedra: no se reservó nada.",
+        "HOLD_RESULT_UNKNOWN" to "No se pudo confirmar el horario. Si aparece ocupado, se libera solo en unos minutos."
+    )
+
     companion object {
         const val NO_CONNECTION = "No se pudo conectar con el servidor: hay que revisar la conexión."
+        const val TIMEOUT = "El servidor tardó demasiado en responder."
+        const val UNREADABLE = "La respuesta del servidor no se pudo interpretar."
+        const val FAILED = "No se pudo completar la reserva."
         const val GENERIC = "No se pudo completar la operación."
     }
 }
