@@ -1,0 +1,41 @@
+package ar.edu.um.prog2.fzapata.cliente.session
+
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+
+// Conoce la sesión e interactúa con el disco
+class SessionManager(private val store: SessionStore) {
+
+    // Crea una "caja" con el token al arrancar la app
+    private val currentToken = MutableStateFlow(store.load())
+
+    // Las pantallas la observan: cuando el token pasa a null, vuelven al login
+    val tokenFlow: StateFlow<String?> = currentToken.asStateFlow()
+
+    // true si la última vez que se vació la sesión fue porque el servicio rechazó el token, y no porque el usuario cerró la sesión
+    var expired: Boolean = false
+        private set
+
+    // Lee el token
+    fun token(): String? = currentToken.value
+
+    // Actualiza el token
+    fun save(token: String) {
+        store.save(token) // Guarda en disco
+        expired = false
+        currentToken.value = token // Actualiza la sesión en memoria
+    }
+
+    // El usuario cierra la sesión
+    fun logout() {
+        store.clear()
+        currentToken.value = null
+    }
+
+    // El servicio rechazó el token: se marca antes de vaciarlo para que el login, al aparecer, ya lo sepa
+    fun expire() {
+        expired = true
+        logout()
+    }
+}
